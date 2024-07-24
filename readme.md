@@ -1,5 +1,7 @@
 This is a multithreaded implementation of a client-server chat with a chatbot
 
+![alt text](https://github.com/PyxAI/MGK-labs/blob/master/chat/example.png?raw=true)
+
 Server:
     The server listens to any incoming connections and new data in sockets using select.select()
     It accepts new connections, adding them to the client list.
@@ -19,3 +21,4 @@ some how-to's.
 
 Building the project end to end took about 1.5 days of work. But I'm pretty pleased with the result.  
 There is a lot that can be added like tests, usernames, a db with tables for users and conversations, and more.
+
