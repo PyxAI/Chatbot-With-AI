@@ -10,11 +10,10 @@ class ChatClient:
     def __init__(self, host, port):
         self.host = host
         self.port = port
-        self.socket = socket.socket()
-        self.connect(host, port)
         self.enter_message_prompt = "Enter a message>> "
 
     def start(self):
+        self.connect(self.host, self.port)
         try:
             # Create a thread for receiving messages from the server
             self.recv_thread = threading.Thread(target=self.receive_messages)
@@ -27,6 +26,7 @@ class ChatClient:
     @retry(wait_fixed=3000)
     def connect(self, host, port):
         try:
+            self.socket = socket.socket()
             self.socket.connect((host, port))
         except ConnectionError as err:
             print("Connection error, retrying...\n")

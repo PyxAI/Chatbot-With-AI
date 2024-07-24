@@ -15,6 +15,7 @@ random_prompt = (
     "Keep your replies one sentence short."
     )
 
+
 class AIClient(ChatClient):
     def __init__(self, host, port, lines_interval=None, seconds_interval=None):
         super().__init__(host, port)
@@ -22,18 +23,37 @@ class AIClient(ChatClient):
         self.seconds_interval = seconds_interval
         self.conversation = []
         self.client = OpenAI(api_key=openai_key)
-
         self.timer = time.time()
+        self.connect(host, port)
+
         if not self.lines_interval and not self.seconds_interval:
             raise ValueError("AI client requires either lines_interval or seconds_interval")
 
         if self.lines_interval:
-            self.respond_thread = threading.Thread(target=self.respond_to_conversation)
+            self.respond_thread = threading.Thread(target=self.bot_respond_to_conversation)
         else:
-            self.respond_thread = threading.Thread(target=self.respond_randomly)
+            self.respond_thread = threading.Thread(target=self.bot_respond_randomly)
 
-        self.respond_thread.daemon = True
+        self.recv_thread = threading.Thread(target=self.receive_messages)
+        self.recv_thread.start()
+
+        self.respond_thread.daemon = False
         self.respond_thread.start()
+
+    def bot_respond_to_conversation(self):
+        while True:
+            if len(self.conversation) >= self.lines_interval:
+                resp = self.make_a_replay(self.conversation)
+                self.send_single_message(resp)
+                self.conversation = []
+            time.sleep(0.1)
+
+    def bot_respond_randomly(self):
+        while True:
+            if time.time() - self.timer > self.seconds_interval:
+                self.timer = time.time()
+                self.send_single_message(self.make_a_random_remark())
+            time.sleep(0.1)
 
     def send_messages(self):
         pass
@@ -58,22 +78,6 @@ class AIClient(ChatClient):
         )
         return self.extract_message(completion)
 
-    def respond_to_conversation(self):
-        while True:
-            if self.lines_interval:
-                if len(self.conversation) >= self.lines_interval:
-                    resp = self.make_a_replay(self.conversation)
-                    self.send_single_message(resp)
-                    self.conversation = []
-            time.sleep(0.1)
-
-    def respond_randomly(self):
-        while True:
-            if time.time() - self.timer > self.seconds_interval:
-                self.timer = time.time()
-                self.send_single_message(self.make_a_random_remark())
-            time.sleep(0.1)
-
     def receive_messages(self):
         while True:
             # Receive message from server
@@ -86,6 +90,5 @@ class AIClient(ChatClient):
             self.conversation.append(msg)
 
 
-# Example usage:
-ai_client = AIClient("localhost", 12345, seconds_interval=10)
+ai_client = AIClient("localhost", 12345, lines_interval=5)
 
