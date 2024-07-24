@@ -11,11 +11,13 @@ Client:
     
 AI:
     Will either write something relevant to the conversation, or randomly blur out insanities
-    This behaviour can be changed ofcourse by changing the prompt
+    This behaviour can be changed of course by changing the prompt
 
 
-To build this, I had to learn a bit about sockets and Threading library, this took me an extra few hours to go through 
-some how-to's.
+To build this, I had to learn a bit about the python libraries for sockets, Threading and select.
+This took me an extra few hours to go through some how-to's.
+Although I did work with similar libraries- asyncio and httpx, it's a new challange:
+For me the challenge was to both learn and implement new libraries in one solution, in a reasonable amount of time.
 
 Building the project end to end took about 1.5 days of work. But I'm pretty pleased with the result.  
 There is a lot that can be added like tests, usernames, a db with tables for users and conversations, and more.
